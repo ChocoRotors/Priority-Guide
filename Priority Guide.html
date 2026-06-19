@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Priority Enterprise - Interactive User Guide</title>
+<style>
+:root{--primary:#1a56db;--primary-light:#e8f0fe;--primary-dark:#0d2f7a;--accent:#f59e0b;--bg:#f8fafc;--card:#fff;--text:#1e293b;--text-light:#64748b;--border:#e2e8f0;--success:#10b981;--sidebar-w:270px;--header-h:60px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;display:flex;align-items:center;padding:0 24px;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.header h1{font-size:1.25rem;font-weight:600}
+.header .sub{font-size:.78rem;opacity:.8;margin-left:12px}
+.search-box{margin-left:auto;position:relative}
+.search-box input{width:260px;padding:7px 12px 7px 34px;border:none;border-radius:8px;background:rgba(255,255,255,.15);color:#fff;font-size:.88rem;outline:none;transition:all .3s}
+.search-box input::placeholder{color:rgba(255,255,255,.6)}
+.search-box input:focus{background:rgba(255,255,255,.25);width:320px}
+.search-box .si{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.7}
+.menu-btn{display:none;background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;margin-right:12px}
+.progress-bar{height:3px;background:rgba(255,255,255,.2);position:absolute;bottom:0;left:0;right:0}
+.progress-fill{height:100%;background:var(--accent);transition:width .5s;width:0%}
+.sidebar{position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);background:var(--card);border-right:1px solid var(--border);overflow-y:auto;z-index:90;transition:transform .3s}
+.nav-label{padding:4px 20px;font-size:.68rem;text-transform:uppercase;color:var(--text-light);font-weight:700;letter-spacing:.5px;margin-top:14px}
+.nav-item{padding:9px 20px;cursor:pointer;font-size:.86rem;color:var(--text);transition:all .2s;display:flex;align-items:center;gap:10px;border-left:3px solid transparent}
+.nav-item:hover{background:var(--primary-light);color:var(--primary)}
+.nav-item.active{background:var(--primary-light);color:var(--primary);border-left-color:var(--primary);font-weight:600}
+.nav-item .ic{font-size:1.1rem;width:22px;text-align:center}
+.nav-item .badge{margin-left:auto;background:var(--primary);color:#fff;font-size:.62rem;padding:2px 6px;border-radius:10px}
+.main{margin-left:var(--sidebar-w);margin-top:var(--header-h);padding:28px;min-height:calc(100vh - var(--header-h))}
+.section{display:none;animation:fadeIn .3s ease}.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border-radius:12px;padding:22px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:18px;border:1px solid var(--border)}
+.card h2{font-size:1.35rem;margin-bottom:10px;color:var(--primary-dark)}
+.card h3{font-size:1.05rem;margin:14px 0 6px;color:var(--text)}
+.card p{margin-bottom:8px}
+.accordion{margin-bottom:6px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.accordion-header{padding:12px 16px;cursor:pointer;background:var(--bg);font-weight:600;font-size:.92rem;display:flex;align-items:center;justify-content:space-between;transition:background .2s;user-select:none}
+.accordion-header:hover{background:var(--primary-light)}
+.accordion-header .arrow{transition:transform .3s;font-size:.8rem}
+.accordion.open .accordion-header{background:var(--primary-light);color:var(--primary)}
+.accordion.open .accordion-header .arrow{transform:rotate(90deg)}
+.accordion-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.accordion.open .accordion-body{max-height:8000px}
+.accordion-content{padding:14px 16px}
+.step-walker{background:var(--bg);border-radius:10px;padding:18px;margin:10px 0}
+.step-indicator{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.step-dot{width:30px;height:30px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:var(--text-light);cursor:pointer;transition:all .3s}
+.step-dot.active{background:var(--primary);color:#fff;transform:scale(1.15)}
+.step-dot.done{background:var(--success);color:#fff}
+.step-content{background:var(--card);border-radius:8px;padding:18px;border-left:4px solid var(--primary);min-height:70px}
+.step-content .step-title{font-weight:700;color:var(--primary);margin-bottom:5px}
+.step-nav{display:flex;gap:10px;margin-top:12px}
+.step-nav button{padding:7px 18px;border:none;border-radius:6px;cursor:pointer;font-size:.83rem;font-weight:600;transition:all .2s}
+.prev-btn{background:var(--border);color:var(--text)}.prev-btn:hover{background:#cbd5e1}
+.next-btn{background:var(--primary);color:#fff}.next-btn:hover{background:var(--primary-dark)}
+.callout{padding:12px 16px;border-radius:8px;margin:10px 0;display:flex;gap:10px;align-items:flex-start}
+.callout .ci{font-size:1.1rem;flex-shrink:0;margin-top:2px}
+.callout-tip{background:#ecfdf5;border:1px solid #a7f3d0}
+.callout-note{background:#eff6ff;border:1px solid #bfdbfe}
+.callout-warning{background:#fffbeb;border:1px solid #fde68a}
+.shortcut-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:10px}
+.shortcut-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:12px}
+.shortcut-card .keys{display:flex;gap:3px;flex-shrink:0}
+.key{background:linear-gradient(180deg,#f8fafc,#e2e8f0);border:1px solid #cbd5e1;border-radius:5px;padding:3px 9px;font-family:Consolas,'Courier New',monospace;font-size:.78rem;font-weight:600;color:var(--text);box-shadow:0 2px 0 #cbd5e1;white-space:nowrap}
+.shortcut-card .desc{font-size:.83rem}
+.filter-bar{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+.filter-btn{padding:7px 15px;border:2px solid var(--border);border-radius:20px;background:var(--card);cursor:pointer;font-size:.8rem;font-weight:600;color:var(--text-light);transition:all .2s}
+.filter-btn:hover{border-color:var(--primary);color:var(--primary)}
+.filter-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.info-table{width:100%;border-collapse:collapse;margin:10px 0}
+.info-table th,.info-table td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.info-table th{background:var(--bg);font-weight:700;font-size:.82rem;color:var(--text-light);text-transform:uppercase}
+.info-table td{font-size:.88rem}
+.info-table tr:hover{background:var(--primary-light)}
+.hp-explorer{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.hp-el{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .3s}
+.hp-el:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.hp-el.expanded{border-color:var(--primary);grid-column:1/-1}
+.hp-el .el-t{font-weight:700;font-size:.92rem;display:flex;align-items:center;gap:8px}
+.hp-el .el-d{font-size:.82rem;color:var(--text-light);margin-top:3px}
+.hp-el .el-det{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:.88rem;line-height:1.7}
+.hp-el.expanded .el-det{display:block}
+.search-results{position:absolute;top:100%;left:0;right:0;background:#fff;border-radius:0 0 8px 8px;box-shadow:0 4px 12px rgba(0,0,0,.15);max-height:280px;overflow-y:auto;display:none;z-index:200}
+.search-results.visible{display:block}
+.sr-item{padding:9px 13px;cursor:pointer;font-size:.83rem;border-bottom:1px solid var(--border);color:var(--text)}
+.sr-item:hover{background:var(--primary-light)}
+.sr-item .sr-sec{font-size:.68rem;color:var(--primary);font-weight:600}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0;padding:16px}.menu-btn{display:block}.hp-explorer{grid-template-columns:1fr}.search-box input{width:160px}.search-box input:focus{width:200px}}
+</style>
+</head>
+<body>
+<div class="header">
+<button class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">&#9776;</button>
+<h1>Priority&#8482; Enterprise</h1><span class="sub">Interactive User Guide</span>
+<div class="search-box"><span class="si">&#128269;</span><input type="text" placeholder="Search the guide..." id="gSearch" oninput="doSearch(this.value)" autocomplete="off"><div class="search-results" id="sResults"></div></div>
+<div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
+</div>
+
+<div class="sidebar" id="sidebar">
+<div class="nav-label">Getting Started</div>
+<div class="nav-item active" data-sec="intro"><span class="ic">&#128214;</span> Introduction</div>
+<div class="nav-item" data-sec="homepage"><span class="ic">&#127968;</span> Home Page</div>
+<div class="nav-item" data-sec="entering"><span class="ic">&#128273;</span> Entering Priority</div>
+<div class="nav-label">Core Features</div>
+<div class="nav-item" data-sec="forms"><span class="ic">&#128203;</span> Forms</div>
+<div class="nav-item" data-sec="reports"><span class="ic">&#128202;</span> Reports &amp; Programs</div>
+<div class="nav-label">Customization</div>
+<div class="nav-item" data-sec="personalize"><span class="ic">&#127912;</span> Personalization</div>
+<div class="nav-item" data-sec="automations"><span class="ic">&#9889;</span> Automations Hub</div>
+<div class="nav-label">Advanced</div>
+<div class="nav-item" data-sec="templates"><span class="ic">&#128196;</span> Templates</div>
+<div class="nav-item" data-sec="bpm"><span class="ic">&#128256;</span> BPM Flow Charts</div>
+<div class="nav-item" data-sec="shortcuts"><span class="ic">&#9000;</span> Keyboard Shortcuts</div>
+</div>
+
+<div class="main" id="mainContent">
+
+<!-- INTRO -->
+<div class="section active" id="sec-intro">
+<div class="card">
+<h2>Welcome to the Priority User Guide</h2>
+<p>This interactive guide covers everything you need to work with Priority. It explains menus, forms, reports, programs, personalization, automations, templates, and keyboard shortcuts.</p>
+<div class="callout callout-note"><span class="ci">&#8505;&#65039;</span><div><strong>What this covers:</strong> How to add documents, search for data, navigate menus, customize your workspace, define automations, create templates, and use keyboard shortcuts.</div></div>
+<div class="callout callout-tip"><span class="ci">&#128161;</span><div><strong>How to use:</strong> Navigate via the sidebar. Expand accordion panels for details. Walk through step-by-step procedures with Next/Previous buttons. Search any topic with the search bar above.</div></div>
+<h3>Guide Sections</h3>
+<table class="info-table">
+<tr><th>Section</th><th>What You'll Learn</th></tr>
+<tr><td><strong>Home Page</strong></td><td>Navigate menus, search, widgets, portlets, and settings</td></tr>
+<tr><td><strong>Forms</strong></td><td>Add, update, search, delete records; views, subforms, attachments</td></tr>
+<tr><td><strong>Reports &amp; Programs</strong></td><td>Run programs, generate reports, BI analytics, dashboards, parameters</td></tr>
+<tr><td><strong>Personalization</strong></td><td>Customize menus, forms, reports; packages and favorites</td></tr>
+<tr><td><strong>Automations Hub</strong></td><td>Record macros, define business rules, autofill rules</td></tr>
+<tr><td><strong>Templates</strong></td><td>Create Word, Excel, label, and letter templates</td></tr>
+<tr><td><strong>BPM Flow Charts</strong></td><td>Status workflows, rules, document flow management</td></tr>
+<tr><td><strong>Keyboard Shortcuts</strong></td><td>Complete reference of all keys and functions</td></tr>
+</table>
+</div>
+</div>
+
+<!-- HOME PAGE -->
+<div class="section" id="sec-homepage">
+<div class="card">
+<h2>Priority Home Page</h2>
+<p>Your starting point. Search for data, access frequently used forms, change settings, track changes, chat with colleagues, and view data visualizations.</p>
+<p><strong>Click any element below to explore:</strong></p>
+<div class="hp-explorer" id="hpEx">
+<div class="hp-el" onclick="togEl(this)"><div class="el-t">&#127968; Home Page Button</div><div class="el-d">Return to home from anywhere</div><div class="el-det">Click this button at any time to return to the Priority Home Page from any form, report, or program.</div></div>
+<div class="hp-el" onclick="togEl(this)"><div class="el-t">&#11088; Favorites Menu</div><div class="el-d">Your personalized menu</div><div class="el-det">Create a personal menu tailored to your needs. Add frequently used forms, programs, and reports. Organize with folders. Access via the star icon at top of screen. Add entities from any form by clicking the star in the form header.</div></div>
+<div class="hp-el" onclick="togEl(this)"><div class="el-t">&#128270; Entity Search</div><div class="el-d">Find forms, programs, reports</div><div class="el-det">Click magnifying glass on left of Menu bar. Type a term and press Enter. From results: <strong>Run</strong> the entity, view <strong>Help</strong>, or <strong>More</strong> to copy link, view path, add to Home Page. Case-sensitive unless "Ignore Case" is checked.</div></div>
+<div class="hp-el" onclick="togEl(this)"><div class="el-t">&#128194; Priority Menu</div><div class="el-d">All forms, programs, reports</div><div class="el-det">Top of screen. Each item = a module (Purchasing, Production, etc.). Entity types: <strong>Menu</strong> (submenu), <strong>Form</strong> (records), <strong>Report</strong>, <strong>Program</strong>, <strong>Printout</strong>. Navigate: Enter/&#8594; activate, &#8593;&#8595; move, &#8592; close. Right-click for Help, Copy Path, Add to Home Page.</div></div>
+<div class="hp-el" onclick="togEl(this)"><div class="el-t">&#128269; Search Bar</div><div class="el-d">Search documents and data</div><div class="el-det">Located under the Priority Menu. Type customer names, order numbers, etc. Results appear as you type. Click search icon for full results sorted by type.<br><br><strong>Special characters:</strong><br><code>"..."</code> &#8212; Exact phrase<br><code>+</code> &#8212; Must appear<br><code>-</code> &#8212; Exclude (no space)<br><code>$</code> &#8212; Exact word only</div></div>
+<div class="hp-el" onclick="togEl(this)"><div class="el-t">&#129513; Widgets</div><div class="el-d">Shortcuts to entities</div><div class="el-det">Shortcuts to frequently used entities. <strong>Add:</strong> click + icon or right-click entity &#8594; "Add to Home Page". <strong>Remove:</strong> hover &#8594; More Options &#8594; Delete. <strong>Rearrange</strong> by dragging. Badge = open documents assigned to you. Hover for search and new record icons.</div></div>
+<div class="hp-el" onclick="togEl(this)"><div class="el-t">&#128172; Priority Talk</div><div class="el-d">Notifications and chat</div><div class="el-det">Track document changes and chat with colleagues. Click the bell icon when alerts are detected to view the Alerts window.</div></div>
+<div class="hp-el" onclick="togEl(this)"><div class="el-t">&#128200; Portlets</div><div class="el-d">Visual data graphs</div><div class="el-det">Display company data (sales orders, P&amp;L, etc.) as graphs. Click chart icon to add. Options: choose dates, open in new window, delete. Requires BI module. Run "Prep for Inv. Analysis (BI)" daily.</div></div>
+<div class="hp-el" onclick="togEl(this)"><div class="el-t">&#128230; Packages</div><div class="el-d">Organize workspace by subject</div><div class="el-det">Each package = forms + fields + programs for a topic. One click enables/disables a package. Hide irrelevant modules to declutter your workspace.</div></div>
+<div class="hp-el" onclick="togEl(this)"><div class="el-t">&#128336; Recent &amp; Updates</div><div class="el-d">Recent items and document changes</div><div class="el-det"><strong>Recent Items:</strong> Automatically listed on Home Page.<br><strong>Latest Updates:</strong> Documents opened/updated in past 30 days. System constants LATESTUPDATES and LOGUPDATE control what appears.</div></div>
+<div class="hp-el" onclick="togEl(this)"><div class="el-t">&#128241; Active Screens</div><div class="el-d">Open forms indicator</div><div class="el-det">Shows count of open forms. Click to see list. Click form to switch, hover + x to close, or "Close All".</div></div>
+<div class="hp-el" onclick="togEl(this)"><div class="el-t">&#9881; Options Menu</div><div class="el-d">Settings, language, Help</div><div class="el-det">Change company, password, language, work area design, internal mail, and Help. Additional functions available when forms are open.</div></div>
+<div class="hp-el" onclick="togEl(this)"><div class="el-t">&#10067; Help System</div><div class="el-d">Built-in explanations</div><div class="el-det">Help icon (upper-right): "Get to Know" document, Priority Xpert Knowledge Base (videos, FAQs). Right-click entity &#8594; Help. F1 for field help. Online Help has SOPs, FAQs, videos.</div></div>
+<div class="hp-el" onclick="togEl(this)"><div class="el-t">&#128200; Analytics</div><div class="el-d">Build personalized reports</div><div class="el-det">Build, view, run, and edit personalized reports. Access reports you built or that were shared with you.</div></div>
+</div>
+</div>
+<div class="card">
+<h3>Walkthrough: Finding a Purchase Order</h3>
+<div class="step-walker" id="sw-search"><div class="step-indicator"></div><div class="step-content"></div><div class="step-nav"><button class="prev-btn" onclick="sP('sw-search')">&#8592; Previous</button><button class="next-btn" onclick="sN('sw-search')">Next &#8594;</button></div></div>
+</div>
+</div>
+
+<!-- ENTERING -->
+<div class="section" id="sec-entering">
+<div class="card">
+<h2>Entering Priority</h2>
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Open Priority <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>When you open Priority, the Home Page is displayed. You can begin working immediately. The system supports multiple companies &#8212; switch via the Options Menu.</p>
+</div></div></div>
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Help Options on Entry <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p><strong>Help Button</strong> (upper-right): "Get to Know: Buttons, Icons, and Keys" document, Priority Xpert Knowledge Base with videos and FAQs.</p>
+<p><strong>Entity Help (F1)</strong>: Right-click any entity in the Priority menu &#8594; Help. Choose "Online Help" for SOPs, FAQs, and video clips.</p>
+</div></div></div>
+</div>
+</div>
+
+<!-- FORMS -->
+<div class="section" id="sec-forms">
+<div class="card">
+<h2>Forms</h2>
+<p>Forms are where you work and access all your data &#8212; open new documents, update existing ones, search for records. Each form has multiple views (List, Focus, Single Record).</p>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Form Structure &amp; Elements <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<table class="info-table">
+<tr><th>Element</th><th>Description</th></tr>
+<tr><td><strong>Menu &amp; Search Bar</strong></td><td>Always accessible at the top</td></tr>
+<tr><td><strong>Form Header</strong></td><td>Form name, buttons, icons, actions</td></tr>
+<tr><td><strong>Upper-level Form</strong></td><td>Main area for viewing and adding records</td></tr>
+<tr><td><strong>Splitter</strong></td><td>Drag up/down for more records or subforms (List view)</td></tr>
+<tr><td><strong>Subforms</strong></td><td>Tabs with related information</td></tr>
+<tr><td><strong>Bottom Bar</strong></td><td>Current form and session info</td></tr>
+</table>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Form Header Functions <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<table class="info-table">
+<tr><th>Function</th><th>Key</th><th>Action</th></tr>
+<tr><td>New Document</td><td>Ctrl+Enter</td><td>Open a new document/line</td></tr>
+<tr><td>Delete</td><td>Ctrl+Delete</td><td>Delete current document/line</td></tr>
+<tr><td>Undo</td><td>Ctrl+Z</td><td>Undo last action</td></tr>
+<tr><td>Search Mode</td><td>F11</td><td>Switch to search mode</td></tr>
+<tr><td>Actions</td><td>Ctrl+F5</td><td>Open Actions list</td></tr>
+<tr><td>Form Design</td><td>Ctrl+B</td><td>Open form design options</td></tr>
+<tr><td>Refresh</td><td>Ctrl+F11</td><td>Refresh form data</td></tr>
+<tr><td>View Toggle</td><td>F4</td><td>Toggle List/Record view</td></tr>
+</table>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Adding a New Record &#8212; Step by Step <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<div class="step-walker" id="sw-newrecord"><div class="step-indicator"></div><div class="step-content"></div><div class="step-nav"><button class="prev-btn" onclick="sP('sw-newrecord')">&#8592; Previous</button><button class="next-btn" onclick="sN('sw-newrecord')">Next &#8594;</button></div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Entering Data in Fields <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<table class="info-table">
+<tr><th>Field Type</th><th>How to Use</th></tr>
+<tr><td><strong>Free text</strong></td><td>Type directly</td></tr>
+<tr><td><strong>Drop-down list</strong></td><td>Click arrow or F6/Space to open list</td></tr>
+<tr><td><strong>Search list</strong></td><td>Type to filter, then select</td></tr>
+<tr><td><strong>Date field</strong></td><td>Calendar icon, F6 for relative dates, Shift+F6 for calendar</td></tr>
+<tr><td><strong>Drill-down</strong></td><td>F6 twice to go to source form</td></tr>
+<tr><td><strong>Calculated</strong></td><td>Auto-filled by system &#8212; not editable</td></tr>
+</table>
+<div class="callout callout-tip"><span class="ci">&#128161;</span><div><strong>Tips:</strong> Use <strong>+</strong>/<strong>-</strong> in empty number/date fields to increment/decrement. <strong>F10</strong> copies from the record above. <strong>Ctrl+Z</strong> to undo.</div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Updating Records <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Retrieve the record (via search or scrolling), click the field to change, modify the value. Changes save when you move to the next field. <strong>Focus View</strong> is recommended for editing &#8212; all fields visible at once.</p>
+<div class="callout callout-note"><span class="ci">&#8505;&#65039;</span><div><strong>F5</strong> &#8212; Choose subform and jump to it. <strong>Shift+F5</strong> for the same in search mode.</div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Text Forms &amp; Attachments <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p><strong>Text Forms:</strong> Add free-text remarks that can appear on printed documents.</p>
+<p><strong>Attachments:</strong> <strong>Ctrl+I</strong> to attach files. Click Settings to choose display info (name, date, size).</p>
+<p><strong>Copy/Paste:</strong> Ctrl+C/V standard. <strong>Ctrl+H</strong> copies entire column. <strong>F10</strong> copies from above. <strong>Ctrl+F9</strong> saves to buffer, <strong>F9</strong> pastes from buffer.</p>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Form Actions &amp; Sharing <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p><strong>Ctrl+F5</strong> opens the Actions list: run programs, generate printouts, send emails, open related forms.</p>
+<p><strong>Sharing:</strong> Ctrl+S &#8212; mail with record link. Ctrl+L/Y &#8212; copy link. Ctrl+O &#8212; send link to participants.</p>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Tracking Changes <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Click the <strong>bell icon</strong> for alerts. The <strong>History</strong> window shows a log of changes. Use Settings to customize what types of changes appear.</p>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Searching for Records &#8212; Step by Step <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<div class="step-walker" id="sw-searchrec"><div class="step-indicator"></div><div class="step-content"></div><div class="step-nav"><button class="prev-btn" onclick="sP('sw-searchrec')">&#8592; Previous</button><button class="next-btn" onclick="sN('sw-searchrec')">Next &#8594;</button></div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Saved &amp; Advanced Search <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<div class="step-walker" id="sw-savedsearch"><div class="step-indicator"></div><div class="step-content"></div><div class="step-nav"><button class="prev-btn" onclick="sP('sw-savedsearch')">&#8592; Previous</button><button class="next-btn" onclick="sN('sw-savedsearch')">Next &#8594;</button></div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Viewing Modes <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Toggle with <strong>F4</strong>:</p>
+<table class="info-table">
+<tr><th>View</th><th>Best For</th><th>Description</th></tr>
+<tr><td><strong>List</strong></td><td>Browsing multiple records</td><td>Rows with columns. Sort by clicking headers. Subforms visible below splitter.</td></tr>
+<tr><td><strong>Focus</strong></td><td>Editing single record</td><td>All fields visible at once in detailed layout.</td></tr>
+<tr><td><strong>Single Record</strong></td><td>Detailed review</td><td>One record with all subforms expanded. PgUp/PgDn to navigate.</td></tr>
+</table>
+<div class="callout callout-tip"><span class="ci">&#128161;</span><div><strong>F7</strong> &#8212; hide document. <strong>Ctrl+F7</strong> &#8212; clear all. <strong>Ctrl+F11</strong> &#8212; refresh to show all again.</div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Fixing Mistakes <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<table class="info-table">
+<tr><th>If...</th><th>Then...</th></tr>
+<tr><td>Typo in a field</td><td>Click and correct, or <strong>Ctrl+Z</strong></td></tr>
+<tr><td>Wrong record</td><td><strong>Ctrl+Z</strong> immediately, then find correct one</td></tr>
+<tr><td>Delete a record</td><td><strong>Ctrl+Delete</strong> and confirm</td></tr>
+<tr><td>Restore hidden records</td><td><strong>Ctrl+F11</strong> to refresh</td></tr>
+<tr><td>Clear a field</td><td><strong>Ctrl+U</strong> or <strong>Backspace</strong></td></tr>
+</table>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Multi-Company Forms <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Some forms are shared across all companies. Changes affect every company in the system. Look for the multi-company indicator before editing.</p>
+</div></div></div>
+</div>
+</div>
+
+<!-- REPORTS & PROGRAMS -->
+<div class="section" id="sec-reports">
+<div class="card">
+<h2>Reports &amp; Programs</h2>
+<p>Programs perform actions (update prices, assign parts, print batches). Reports present organized data. Both activated from menus or from within forms.</p>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Running a Program &#8212; Step by Step <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<div class="step-walker" id="sw-runprog"><div class="step-indicator"></div><div class="step-content"></div><div class="step-nav"><button class="prev-btn" onclick="sP('sw-runprog')">&#8592; Previous</button><button class="next-btn" onclick="sN('sw-runprog')">Next &#8594;</button></div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Explorers <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Special programs that open an explorer (like Windows Explorer). Example: <strong>Part Explorer</strong> &#8212; click items in left window to see attributes on the right. Exit via Options Menu &#8594; File &#8594; Exit Explorer.</p>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Report Types &amp; Formats <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<table class="info-table">
+<tr><th>Type</th><th>Description</th></tr>
+<tr><td><strong>Standard HTML</strong></td><td>Organized data, +/- to collapse/expand sections</td></tr>
+<tr><td><strong>Tables</strong></td><td>Summarized with totals per row and field</td></tr>
+<tr><td><strong>Graphs</strong></td><td>Bar, line, area, tree graphs with keys</td></tr>
+<tr><td><strong>Documents</strong></td><td>Printouts for external recipients (invoices, etc.)</td></tr>
+<tr><td><strong>BI Reports</strong></td><td>Multi-perspective analysis with drill-down</td></tr>
+<tr><td><strong>Dashboards</strong></td><td>Multiple web parts with gauges and graphs</td></tr>
+</table>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Running a Report &#8212; Step by Step <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<div class="step-walker" id="sw-runreport"><div class="step-indicator"></div><div class="step-content"></div><div class="step-nav"><button class="prev-btn" onclick="sP('sw-runreport')">&#8592; Previous</button><button class="next-btn" onclick="sN('sw-runreport')">Next &#8594;</button></div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Report Export &amp; Viewing <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<table class="info-table">
+<tr><th>Action</th><th>Description</th></tr>
+<tr><td><strong>Export to Excel</strong></td><td>Click Excel icon</td></tr>
+<tr><td><strong>Export to Word</strong></td><td>Click Word icon</td></tr>
+<tr><td><strong>Export to Outlook</strong></td><td>Click Outlook icon</td></tr>
+<tr><td><strong>Email</strong></td><td>Send via Priority mailbox</td></tr>
+<tr><td><strong>View as graph</strong></td><td>For tabular reports, click graph icon</td></tr>
+<tr><td><strong>Collapse/Expand</strong></td><td>+/- icons for subtotals vs. full detail</td></tr>
+<tr><td><strong>Drill down</strong></td><td>Click items to open related forms</td></tr>
+</table>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Print/Send Options <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<table class="info-table">
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><strong>Choose format</strong></td><td>Word template or HTML</td></tr>
+<tr><td><strong>Customize</strong></td><td>Open Report Design tool</td></tr>
+<tr><td><strong>Print</strong></td><td>Send to printer (Quick Print for default)</td></tr>
+<tr><td><strong>Display</strong></td><td>View in browser or Word</td></tr>
+<tr><td><strong>Mail</strong></td><td>Send as email attachment</td></tr>
+<tr><td><strong>Quick Email</strong></td><td>Send directly without opening email form</td></tr>
+<tr><td><strong>PDF File</strong></td><td>Save and display/send as PDF</td></tr>
+</table>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">BI Reports &amp; Drill-Down <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Analyze data from multiple perspectives. Access from Executive Reports module, analysis menus, form fields with BI icon, or Options Menu &#8594; Run &#8594; Analysis Reports (BI).</p>
+<p><strong>One-dimensional:</strong> Each level appears alone. Drill down through cross-sections. Back arrow to return.</p>
+<p><strong>Multi-dimensional:</strong> View different cross-sections in a single screen within a hierarchical tree. Expand/collapse nodes.</p>
+<p>Filter with patterns/wildcards, set periods (absolute or date ranges), choose Level of Detail (monthly, quarterly), save period templates.</p>
+<div class="callout callout-note"><span class="ci">&#8505;&#65039;</span><div>Run "Prepare All for Analysis (BI)" daily for current data (usually via Tabula Task Scheduler).</div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Parameter Input &#8212; Complete Guide <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Use mouse, Tab, or arrow keys between fields. Don't press Enter until all input is complete.</p>
+<table class="info-table">
+<tr><th>Method</th><th>How</th></tr>
+<tr><td><strong>Exact value</strong></td><td>Select from drop-down or type</td></tr>
+<tr><td><strong>Wildcard (*)</strong></td><td>Default &#8212; all records. E.g., F* = starting with "F"</td></tr>
+<tr><td><strong>OR (|)</strong></td><td>Duplicates field. Enter values in each &#8212; either matches</td></tr>
+<tr><td><strong>BETWEEN (-)</strong></td><td>First value left, last right &#8212; range only</td></tr>
+<tr><td><strong>AND NOT (!)</strong></td><td>Include left, exclude right. E.g., 2* except 21*</td></tr>
+<tr><td><strong>Operators</strong></td><td>Click left arrow: =, &lt;, &lt;=, &gt;, &gt;=, &lt;&gt;</td></tr>
+</table>
+<div class="callout callout-tip"><span class="ci">&#128161;</span><div><strong>Date tip:</strong> F6/Space for relative dates (yesterday, next month). Shift+F6 for pop-up calendar.</div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Dashboards <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Multiple mini-windows (web parts): reports, tables, graphs, gauges, pies. Click design icon to rearrange/add/hide web parts. Add external web sites. Gauges use red/yellow/green for targets &#8212; configure in "Definition of Gauge Scales" form. Click GO to apply changes.</p>
+</div></div></div>
+</div>
+</div>
+
+<!-- PERSONALIZATION -->
+<div class="section" id="sec-personalize">
+<div class="card">
+<h2>Personalize Your Priority</h2>
+<p>Extensive customization: see only relevant entities, rearrange layouts, design forms to match your workflow.</p>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Automated Recommendations <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Priority suggests personalization based on usage. The Personalization Center icon appears when recommendations are available. "Maybe later" items can be found under the same icon.</p>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Design by Packages &#8212; Step by Step <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<div class="step-walker" id="sw-packages"><div class="step-indicator"></div><div class="step-content"></div><div class="step-nav"><button class="prev-btn" onclick="sP('sw-packages')">&#8592; Previous</button><button class="next-btn" onclick="sN('sw-packages')">Next &#8594;</button></div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Customize Menus <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Design Tool options: <strong>Move</strong> items up/down, <strong>Hide</strong> items, <strong>Add User-Defined Reports</strong> (admin). Right-click menu items for design options. Hidden menus show a special icon.</p>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Favorites Menu <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Click star icon in any form to add/remove from Favorites. Organize: click star at top &#8594; right-click entity &#8594; "Organize Favorites", or Options Menu &#8594; Design &#8594; Organize Favorites.</p>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Customize Forms &#8212; Design Tool <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Three modes:</p>
+<p><strong>1. Fields &amp; Tabs:</strong> Rearrange, hide/display, space, merge, freeze fields.</p>
+<p><strong>2. Subforms:</strong> Reorder tabs, hide unused subforms.</p>
+<p><strong>3. Actions:</strong> Choose which appear as smart buttons vs. in Actions list.</p>
+<div class="callout callout-tip"><span class="ci">&#128161;</span><div><strong>Revert:</strong> Design Tool has a reset option to restore original layout. Define record colors via right-click &#8594; Record Color. Adjust column widths by dragging.</div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Customize Reports <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Use Design Report tool to change field order, add/remove fields, modify widths, select print formats. Most documents have predefined formats you can modify.</p>
+</div></div></div>
+</div>
+</div>
+
+<!-- AUTOMATIONS -->
+<div class="section" id="sec-automations">
+<div class="card">
+<h2>Automations Hub</h2>
+<p>Record macros, define business rules, and set up autofill rules to automate repetitive tasks.</p>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Recording Macros &#8212; Step by Step <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Three main macro types:</p>
+<table class="info-table">
+<tr><th>Type</th><th>Use Case</th></tr>
+<tr><td><strong>Single-form, non-repeating</strong></td><td>Same data updates in different documents</td></tr>
+<tr><td><strong>Single-form, repeating</strong></td><td>Same action down multiple lines</td></tr>
+<tr><td><strong>Multi-form</strong></td><td>Navigate between forms and perform actions</td></tr>
+</table>
+<div class="step-walker" id="sw-macro"><div class="step-indicator"></div><div class="step-content"></div><div class="step-nav"><button class="prev-btn" onclick="sP('sw-macro')">&#8592; Previous</button><button class="next-btn" onclick="sN('sw-macro')">Next &#8594;</button></div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Business Rules &#8212; Step by Step <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Rule types: Warning, Error, Email, Text message, Push notification, User verification.</p>
+<div class="step-walker" id="sw-bizrule"><div class="step-indicator"></div><div class="step-content"></div><div class="step-nav"><button class="prev-btn" onclick="sP('sw-bizrule')">&#8592; Previous</button><button class="next-btn" onclick="sN('sw-bizrule')">Next &#8594;</button></div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Autofill Rules <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Automatically set field values when conditions are met. Example: set salesperson when customer is selected. Use function expressions for calculated values (e.g., discount based on quantity).</p>
+<div class="callout callout-note"><span class="ci">&#8505;&#65039;</span><div>Use AND (all conditions) or OR (any condition) in the When section. Valid For determines whose actions trigger the rule.</div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Managing Rules <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p><strong>Search</strong> by keyword. <strong>Report</strong> via More &#8594; Report. <strong>Reorder</strong> with arrows. <strong>Edit</strong> by clicking. <strong>Delete</strong> to remove.</p>
+</div></div></div>
+</div>
+</div>
+
+<!-- TEMPLATES -->
+<div class="section" id="sec-templates">
+<div class="card">
+<h2>Advanced: Templates</h2>
+<p>Create Word documents, spreadsheets, labels, and letters from system data.</p>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Word Templates &#8212; Step by Step <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<div class="step-walker" id="sw-wordtpl"><div class="step-indicator"></div><div class="step-content"></div><div class="step-nav"><button class="prev-btn" onclick="sP('sw-wordtpl')">&#8592; Previous</button><button class="next-btn" onclick="sN('sw-wordtpl')">Next &#8594;</button></div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Excel Spreadsheet Templates <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Generate spreadsheets from system data. Create templates from forms or reports using the Design Template dialog. Map fields to columns, save, then run to generate Excel files with live data.</p>
+<p>To edit: locate template, click edit icon, download, modify in Excel, save back.</p>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Label Generator <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Create labels from form data automatically. Generate unlimited labels from individual records. Choose between preparing for current record or all displayed records. Edit in Work Area or print immediately.</p>
+<div class="callout callout-note"><span class="ci">&#8505;&#65039;</span><div>Requires a label printer and label printing software.</div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Letter Generator <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Produce pre-formatted letters using data from Priority forms. Include attachments. Print or send via email. Use "Letter to Customer" program (CRM &#8594; Customers &#8594; Customer Reports). Also available for vendors and contacts.</p>
+</div></div></div>
+</div>
+</div>
+
+<!-- BPM -->
+<div class="section" id="sec-bpm">
+<div class="card">
+<h2>BPM Flow Charts</h2>
+<p>Define document workflows &#8212; statuses, transition paths, and rules at each stage.</p>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">BPM Basics <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Each flow chart has a <strong>default initial status</strong> (usually "Draft") and defines: which statuses exist, which transitions are allowed, what rules trigger at each change, and who can change statuses. Tool Tray in lower-left has shortcuts.</p>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Creating Status Paths &#8212; Step by Step <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<div class="step-walker" id="sw-bpmpath"><div class="step-indicator"></div><div class="step-content"></div><div class="step-nav"><button class="prev-btn" onclick="sP('sw-bpmpath')">&#8592; Previous</button><button class="next-btn" onclick="sN('sw-bpmpath')">Next &#8594;</button></div></div>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">Rules for Statuses <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>Set up rules for status events:</p>
+<p>&#8226; Automatic email/text/push when a status is reached<br>
+&#8226; Escalation &#8212; re-assign if document stays too long in a status<br>
+&#8226; Open a task on status change<br>
+&#8226; User verification &#8212; require confirmation<br>
+&#8226; Allow/block changes based on conditions</p>
+<p>Same AND/OR logic and Valid For settings as Automations Hub business rules.</p>
+</div></div></div>
+
+<div class="accordion"><div class="accordion-header" onclick="togAcc(this)">BPM Error Reports <span class="arrow">&#9654;</span></div><div class="accordion-body"><div class="accordion-content">
+<p>If an escalation rule triggers a change that form logic doesn't permit (e.g., setting "Final" on an un-itemized shipment), the system generates an error report explaining what happened and why.</p>
+</div></div></div>
+</div>
+</div>
+
+<!-- SHORTCUTS -->
+<div class="section" id="sec-shortcuts">
+<div class="card">
+<h2>Keyboard Shortcuts Reference</h2>
+<p>Click a category to filter:</p>
+<div class="filter-bar" id="sFilt">
+<button class="filter-btn active" onclick="fS('all',this)">All</button>
+<button class="filter-btn" onclick="fS('basic',this)">Basic</button>
+<button class="filter-btn" onclick="fS('action',this)">Actions</button>
+<button class="filter-btn" onclick="fS('nav',this)">Navigation</button>
+<button class="filter-btn" onclick="fS('edit',this)">Editing</button>
+<button class="filter-btn" onclick="fS('cal',this)">Calendar</button>
+</div>
+<div class="shortcut-grid" id="sGrid"></div>
+</div>
+</div>
+
+</div><!-- end main -->
+
+<script>
+const SC=[
+{c:'basic',k:['Enter'],d:'OK / perform action / move to next field'},
+{c:'basic',k:['Ctrl','?'],d:'More details of field'},
+{c:'basic',k:['Esc'],d:'Exit / Close form / Cancel'},
+{c:'basic',k:['F1'],d:'Field help'},
+{c:'basic',k:['Ctrl','F1'],d:'HelpBook'},
+{c:'basic',k:['Shift'],d:'Expand field'},
+{c:'basic',k:['F2'],d:'Toggle move/edit mode'},
+{c:'basic',k:['F4'],d:'Change form view (list/record)'},
+{c:'basic',k:['F7'],d:'Hide document/line from form'},
+{c:'basic',k:['Ctrl','F7'],d:'Clear form of documents'},
+{c:'basic',k:['Ctrl','Enter'],d:'Open new document/line'},
+{c:'basic',k:['Ctrl','Delete'],d:'Delete document/line'},
+{c:'basic',k:['Ctrl','Z'],d:'Undo last action'},
+{c:'action',k:['F11'],d:'Switch to Search mode'},
+{c:'action',k:['Shift','F11'],d:'Open Advanced Search'},
+{c:'action',k:['Ctrl','0'],d:'Run default search'},
+{c:'action',k:['Ctrl','1-9'],d:'Run saved searches'},
+{c:'action',k:['Ctrl','F5'],d:'Open Actions list'},
+{c:'action',k:['Ctrl',']'],d:'Open menu search'},
+{c:'action',k:['Ctrl','`'],d:'Open Options menu'},
+{c:'action',k:['Ctrl','F11'],d:'Refresh form'},
+{c:'action',k:['Alt','1-9'],d:'Run saved macro automations'},
+{c:'action',k:['Ctrl','Break'],d:'Stop current action'},
+{c:'action',k:['F6 / Space'],d:'Open drop-down / date calendar'},
+{c:'action',k:['Ctrl','F6'],d:'View full drop-down list'},
+{c:'action',k:['Shift+Click'],d:'Choose several items in sequence'},
+{c:'action',k:['Ctrl+Click'],d:'Choose several items (not in sequence)'},
+{c:'action',k:['F6','F6'],d:'Drill down to original form'},
+{c:'action',k:['Shift','F6'],d:'Open calendar in date field'},
+{c:'action',k:['Ctrl','S'],d:'Mail with current record link'},
+{c:'action',k:['Ctrl','L'],d:'Copy link to record'},
+{c:'action',k:['Ctrl','O'],d:'Send link to participants'},
+{c:'action',k:['Ctrl','['],d:'Open To Do List'},
+{c:'action',k:['Ctrl','B'],d:'Open Form Design options'},
+{c:'nav',k:['F12'],d:'Move to first subform'},
+{c:'nav',k:['Ctrl','F12'],d:'Search mode: first subform'},
+{c:'nav',k:['F5'],d:'Choose subform and move to it'},
+{c:'nav',k:['Shift','F5'],d:'Search mode: choose subform'},
+{c:'nav',k:['Tab'],d:'Move to next field'},
+{c:'nav',k:['Shift','Tab'],d:'Move to previous field'},
+{c:'nav',k:['Shift','Arrow'],d:'Move between form tabs'},
+{c:'nav',k:['Alt','Arrow'],d:'Move between subforms'},
+{c:'nav',k:['Ctrl','Arrow'],d:'Move between forms/menus'},
+{c:'nav',k:['PgUp/PgDn'],d:'Move between records'},
+{c:'nav',k:['Home'],d:'First field / first character'},
+{c:'nav',k:['Ctrl','Home'],d:'First record in form'},
+{c:'nav',k:['End'],d:'Last field / last character'},
+{c:'nav',k:['Ctrl','End'],d:'Last record in form'},
+{c:'nav',k:['Ctrl','G'],d:'Go to record by number'},
+{c:'nav',k:['Ctrl','F3'],d:'Search value in field across all docs'},
+{c:'nav',k:['F3'],d:'Next field with same value'},
+{c:'nav',k:['F8'],d:'Return from drill-down to paste data'},
+{c:'edit',k:['Ctrl','Shift'],d:'Switch language and text direction'},
+{c:'edit',k:['Ctrl','F2'],d:'Switch writing direction'},
+{c:'edit',k:['Ins'],d:'Toggle insert/replace'},
+{c:'edit',k:['Del'],d:'Delete current character'},
+{c:'edit',k:['Backspace'],d:'Delete character/field content'},
+{c:'edit',k:['Ctrl','U'],d:'Delete field content'},
+{c:'edit',k:['Ctrl','C'],d:'Copy'},
+{c:'edit',k:['Ctrl','V'],d:'Paste'},
+{c:'edit',k:['Ctrl','H'],d:'Copy entire column'},
+{c:'edit',k:['F10'],d:'Copy field from above'},
+{c:'edit',k:['+'],d:'Increase number/date/hour value'},
+{c:'edit',k:['-'],d:'Decrease number/date/hour value'},
+{c:'edit',k:['Ctrl','F9'],d:'Save field to buffer'},
+{c:'edit',k:['F9'],d:'Paste from buffer'},
+{c:'edit',k:['Ctrl','F8'],d:'Calculate column sum to this field'},
+{c:'edit',k:['Ctrl','I'],d:'Add file/attachment'},
+{c:'cal',k:['Arrow Keys'],d:'Move between days'},
+{c:'cal',k:['Up/Down'],d:'Move between weeks'},
+{c:'cal',k:['PgUp/PgDn'],d:'Move between months'},
+{c:'cal',k:['Enter'],d:'Select displayed date'},
+{c:'cal',k:['Esc'],d:'Exit calendar'}
+];
+
+const SD={
+'sw-search':[
+{t:'Open Search Bar',x:'In the Priority Search Bar (under the menu or at top of any form), type the vendor\'s name or part of it — e.g., type "Da".'},
+{t:'View Quick Results',x:'Results appear instantly as you type. Click any result to open it directly.'},
+{t:'Open Full Results',x:'Click the search icon to open a full search results form sorted by document type with counts.'},
+{t:'Filter by Type',x:'Click "Purchase Orders" on the left to show only purchase orders for the vendor.'},
+{t:'Filter by Date',x:'Select an option under "Filter by Date" to narrow results to a time period.'},
+{t:'Open Document',x:'Click a result to open it. Return to search results from the Active Screens list.'},
+{t:'Special Characters',x:'Refine searches: "..." exact phrase, + must appear, - exclude (no space), $ exact word only.'}
+],
+'sw-newrecord':[
+{t:'Open the Form',x:'Navigate via Priority Menu, Entity Search, Favorites, or Home Page widgets.'},
+{t:'Create New Record',x:'Press Ctrl+Enter or click New Document in the Form Header.'},
+{t:'Enter Data',x:'Click each field to enter data. Tab between fields. F6/Space for drop-downs. Calendar icon for dates.'},
+{t:'Use Info Panel',x:'In Focus view, a side panel shows additional info organized by the field\'s place in the system.'},
+{t:'Handle Required Fields',x:'If a required field is empty, the system displays a message. Fill in required data first.'},
+{t:'Save',x:'Records save automatically when you move to the next field or press Enter.'},
+{t:'Review',x:'Your record is saved. Find it via search or in the Latest Updates list.'}
+],
+'sw-searchrec':[
+{t:'Enter Search Mode',x:'Press F11 or click Search icon. Fields become empty for entering criteria.'},
+{t:'Set Criteria',x:'Click column headers for filter icons. Set conditions: equals, contains, greater than, etc.'},
+{t:'Multiple Filters',x:'Filter on multiple fields simultaneously — customer AND date AND status.'},
+{t:'Execute Search',x:'Press Enter or click Search. Matching records appear.'},
+{t:'Refine',x:'Too many results? Add more filters via column filter icons.'},
+{t:'Sort Results',x:'Click column headers to sort ascending/descending.'},
+{t:'Work with Results',x:'Click to select. PgUp/PgDn to navigate. F4 to change view.'},
+{t:'Clear',x:'Ctrl+F7 clears form. Ctrl+F11 refreshes to show all records.'}
+],
+'sw-savedsearch':[
+{t:'Set Search Conditions',x:'Set up a search using column filters or Search Mode (F11).'},
+{t:'Save the Search',x:'Click "Create New Search" > "Save". Give it a descriptive name.'},
+{t:'Run Saved Search',x:'Click the name to run. Ctrl+1 through Ctrl+9 for quick access. Ctrl+0 for default.'},
+{t:'Open Advanced Search',x:'Shift+F11. Click "Choose a field" to select fields for conditions.'},
+{t:'Build Conditions',x:'Select field, choose operator, enter value. Click + to add more conditions.'},
+{t:'Execute and Save',x:'Click "Search" to run. "Save & Search" to save for reuse.'}
+],
+'sw-runprog':[
+{t:'Find the Program',x:'Locate in Priority Menu (gear icon) or use Entity Search.'},
+{t:'Parameter Input',x:'Fill required fields. Some have drop-downs, calendars, wildcards (*) for all records.'},
+{t:'Narrow Scope',x:'Replace * with specific values. Click drop-downs to select.'},
+{t:'Confirm',x:'Click OK. Confirmation shows your parameters. Verify and OK again.'},
+{t:'View Results',x:'Program executes. Many show a results report. Unsuccessful = message to retry.'},
+{t:'Cancel if Needed',x:'Cancel at any point with Cancel button or Esc.'}
+],
+'sw-runreport':[
+{t:'Select Report',x:'Find in Priority Menu (report icon) or Entity Search.'},
+{t:'Choose Format',x:'Dialog: "Display Report", "Download as Spreadsheet", or More Options > "Download to File".'},
+{t:'Enter Parameters',x:'Fill parameter input screen. Use drop-downs, wildcards, operators. Dates have calendars.'},
+{t:'Generate',x:'Click OK. Report displays in browser (or downloads based on format).'},
+{t:'Work with Report',x:'Export to Excel/Word/Outlook, email, view as graph, collapse/expand, drill down.'},
+{t:'Saved Reports',x:'Previous reports saved in Saved Reports dropdown. Display, Send, or Delete.'}
+],
+'sw-macro':[
+{t:'Open Automations Hub',x:'From Form Header, open Automations Hub → Macros → Record Macro.'},
+{t:'Configure Settings',x:'Enter name, choose shortcut key (Alt+1-9), toggle Repeat if needed.'},
+{t:'Start Recording',x:'Click "Start Recording". Red button blinks. Every action is captured.'},
+{t:'Perform Actions',x:'Navigate fields, enter data, use shortcuts — everything is recorded.'},
+{t:'Stop Recording',x:'Click blue stop button. Confirmation appears. Macro is saved.'},
+{t:'Run the Macro',x:'Use Alt+[number] shortcut, or go to Automations Hub → Macros and select it.'}
+],
+'sw-bizrule':[
+{t:'Open Business Rules',x:'In the form, open Automations Hub → "Define Business Rules".'},
+{t:'Choose Rule Type',x:'Select: Warning, Error, Email, Text, Push notification, or User verification.'},
+{t:'Define Action',x:'Configure what happens. For messages: type subject and body. Use "Add Field" for dynamic values.'},
+{t:'Set Conditions',x:'Select field, operator (equals, greater than, changes to, etc.), and value. AND/OR for multiple.'},
+{t:'Set Scope',x:'Valid For: all users, specific users, or user groups.'},
+{t:'Function Expressions',x:'Click function button for predefined expressions or custom formulas.'},
+{t:'Save and Test',x:'Save. Test by performing the triggering action. Edit/reorder from rules list.'}
+],
+'sw-packages':[
+{t:'Open Packages',x:'On Home Page, click the Packages icon.'},
+{t:'Browse Categories',x:'Packages divided by category, each with forms, fields, programs for a topic.'},
+{t:'Enable/Disable',x:'One click enables or disables a package. Disabling hides related items.'},
+{t:'See Effect',x:'Disabled packages\' menu items, fields, and programs are hidden. Re-enable anytime.'}
+],
+'sw-wordtpl':[
+{t:'Select Document',x:'In Priority Menu, select the document printout (e.g., Order Confirmation).'},
+{t:'Open Customize',x:'Select "Customize", then "Template Document" in Design Report dialog.'},
+{t:'Choose Template',x:'Edit existing or create new. Predefined templates exist for many documents.'},
+{t:'Design in Word',x:'Add logo, contact info. Enable Developer tab (File > Options).'},
+{t:'Map Fields',x:'Developer tab → XML Mapping pane. Select Priority document. Right-click field → Insert Content Control → Rich Text.'},
+{t:'Repeating Sections',x:'Use repeating content controls for table data (order items, etc.).'},
+{t:'Save and Use',x:'Save template. Word format now available alongside HTML when printing/sending.'}
+],
+'sw-bpmpath':[
+{t:'Open Flow Chart',x:'Entity Search: find "BPM Flow Chart – Sales Orders" (or your document type).'},
+{t:'View Statuses',x:'Flow chart shows all statuses. Default initial status (usually "Draft") is marked.'},
+{t:'Create Path',x:'Click source status, then destination. A connecting line (path) appears.'},
+{t:'Path Properties',x:'Right-click path to set: who can use it, conditions, and triggered actions.'},
+{t:'Add Rules',x:'Right-click status for: notifications, escalation, tasks, verification, allow/block changes.'},
+{t:'Disable Paths',x:'Options Menu → Edit → "Disable Path Definitions" (temporary, keeps rules active).'}
+]
+};
+
+let CS={};
+function initSW(id){if(!SD[id])return;CS[id]=0;const w=document.getElementById(id);if(!w)return;w.querySelector('.step-indicator').innerHTML=SD[id].map((s,i)=>`<div class="step-dot ${i===0?'active':''}" onclick="sG('${id}',${i})">${i+1}</div>`).join('');rS(id);}
+function rS(id){const w=document.getElementById(id);if(!w)return;const s=SD[id][CS[id]];w.querySelector('.step-content').innerHTML=`<div class="step-title">Step ${CS[id]+1} of ${SD[id].length}: ${s.t}</div><p>${s.x}</p>`;w.querySelectorAll('.step-dot').forEach((d,i)=>{d.className='step-dot'+(i===CS[id]?' active':i<CS[id]?' done':'');});w.querySelector('.prev-btn').disabled=CS[id]===0;w.querySelector('.next-btn').textContent=CS[id]===SD[id].length-1?'✓ Done':'Next →';}
+function sN(id){if(CS[id]<SD[id].length-1){CS[id]++;rS(id);}}
+function sP(id){if(CS[id]>0){CS[id]--;rS(id);}}
+function sG(id,i){CS[id]=i;rS(id);}
+
+const secList=['intro','homepage','entering','forms','reports','personalize','automations','templates','bpm','shortcuts'];
+document.querySelectorAll('.nav-item').forEach(ni=>{
+  ni.addEventListener('click',function(){
+    const sec=this.dataset.sec;
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.getElementById('sec-'+sec).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('sec-'+sec).querySelectorAll('.step-walker').forEach(sw=>{if(!CS[sw.id])initSW(sw.id);});
+    document.getElementById('pFill').style.width=((secList.indexOf(sec)+1)/secList.length*100)+'%';
+    document.getElementById('sidebar').classList.remove('open');
+    window.scrollTo(0,0);
+  });
+});
+
+function togAcc(h){const a=h.parentElement;a.classList.toggle('open');if(a.classList.contains('open'))a.querySelectorAll('.step-walker').forEach(sw=>{if(!CS[sw.id])initSW(sw.id);});}
+function togEl(el){const was=el.classList.contains('expanded');document.querySelectorAll('.hp-el').forEach(e=>e.classList.remove('expanded'));if(!was)el.classList.add('expanded');}
+
+function renderSC(f){const g=document.getElementById('sGrid');const fl=f==='all'?SC:SC.filter(s=>s.c===f);g.innerHTML=fl.map(s=>`<div class="shortcut-card"><div class="keys">${s.k.map(k=>`<span class="key">${k}</span>`).join('')}</div><div class="desc">${s.d}</div></div>`).join('');}
+function fS(c,b){document.querySelectorAll('#sFilt .filter-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderSC(c);}
+
+const SI=[
+{s:'homepage',kw:'home page overview search widgets portlets menu favorites packages',l:'Home Page Overview'},
+{s:'homepage',kw:'priority menu module submenu entity form report program printout',l:'Priority Menu'},
+{s:'homepage',kw:'entity search magnifying glass find',l:'Entity Search'},
+{s:'homepage',kw:'search bar special characters quotation plus minus',l:'Search Bar'},
+{s:'homepage',kw:'widgets shortcuts add remove',l:'Widgets'},
+{s:'homepage',kw:'portlets graphs visual data BI',l:'Portlets'},
+{s:'forms',kw:'forms records add new update delete search view',l:'Forms Overview'},
+{s:'forms',kw:'form header icons buttons actions',l:'Form Header'},
+{s:'forms',kw:'add new record create document enter data',l:'Adding Records'},
+{s:'forms',kw:'drop-down list search list date field drill down',l:'Data Entry Fields'},
+{s:'forms',kw:'update edit modify change record',l:'Updating Records'},
+{s:'forms',kw:'text forms attachments files copy paste',l:'Text & Attachments'},
+{s:'forms',kw:'search records filter sort F11 search mode',l:'Searching Records'},
+{s:'forms',kw:'saved search advanced search conditions',l:'Saved/Advanced Search'},
+{s:'forms',kw:'list view focus view single record F4',l:'Viewing Modes'},
+{s:'forms',kw:'fix mistakes undo delete clear',l:'Fixing Mistakes'},
+{s:'reports',kw:'programs run execute parameter input',l:'Running Programs'},
+{s:'reports',kw:'reports HTML tables graphs documents BI',l:'Report Types'},
+{s:'reports',kw:'run report display download spreadsheet',l:'Running Reports'},
+{s:'reports',kw:'export excel word outlook email',l:'Export Options'},
+{s:'reports',kw:'print send options format PDF',l:'Print/Send Options'},
+{s:'reports',kw:'BI business intelligence drill down',l:'BI Reports'},
+{s:'reports',kw:'parameter input wildcard operator pattern',l:'Parameter Input'},
+{s:'reports',kw:'dashboards web parts gauges',l:'Dashboards'},
+{s:'personalize',kw:'personalize customize recommendations packages menus forms favorites',l:'Personalization'},
+{s:'automations',kw:'macros record automate repeat',l:'Macros'},
+{s:'automations',kw:'business rules warning error email notification',l:'Business Rules'},
+{s:'automations',kw:'autofill rules automatic field value',l:'Autofill Rules'},
+{s:'templates',kw:'word template document printout XML',l:'Word Templates'},
+{s:'templates',kw:'excel spreadsheet template',l:'Excel Templates'},
+{s:'templates',kw:'label generator print labels',l:'Label Generator'},
+{s:'templates',kw:'letter generator customers vendors',l:'Letter Generator'},
+{s:'bpm',kw:'BPM flow chart status workflow path rules',l:'BPM Flow Charts'},
+{s:'shortcuts',kw:'keyboard shortcuts keys functions ctrl F1',l:'Keyboard Shortcuts'}
+];
+
+function doSearch(q){const r=document.getElementById('sResults');if(!q||q.length<2){r.classList.remove('visible');return;}const ql=q.toLowerCase();const m=SI.filter(i=>i.kw.toLowerCase().includes(ql)||i.l.toLowerCase().includes(ql)).slice(0,8);if(!m.length){r.classList.remove('visible');return;}r.innerHTML=m.map(i=>`<div class="sr-item" onclick="goS('${i.s}')"><div class="sr-sec">${i.s.toUpperCase()}</div>${i.l}</div>`).join('');r.classList.add('visible');}
+function goS(s){document.getElementById('sResults').classList.remove('visible');document.getElementById('gSearch').value='';const ni=document.querySelector(`.nav-item[data-sec="${s}"]`);if(ni)ni.click();}
+document.addEventListener('click',e=>{if(!e.target.closest('.search-box'))document.getElementById('sResults').classList.remove('visible');});
+
+document.addEventListener('DOMContentLoaded',()=>{renderSC('all');document.querySelectorAll('.section.active .step-walker').forEach(sw=>initSW(sw.id));});
+</script>
+</body>
+</html>
